@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const dbase = require("./config/db");
 const ErrorHandle = require("./middleware/errorHandle");
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 const cors = require("cors");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
