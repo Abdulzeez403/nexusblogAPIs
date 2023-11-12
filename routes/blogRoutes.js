@@ -7,7 +7,8 @@ const {
   UpdateSingleBlog,
   DeleteSingleBlog,
   GettingUserBlogs,
-} = require("../control/control");
+  likeAndUnlike
+} = require("../controller/blogController");
 
 const { VerifyToken } = require("../middleware/verifyToken");
 
@@ -15,6 +16,10 @@ const { VerifyToken } = require("../middleware/verifyToken");
 //fetching all the data from the database to the frontend
 
 router.route("/").get(GettingAllBlogs);
+router.route("/likes/:id").put(likeAndUnlike
+);
+
+
 
 //Update a single blog
 // Delete a single blog
@@ -24,6 +29,7 @@ router
   .get(GettingASingleBlog)
   .post(PostBlog)
   .delete(DeleteSingleBlog)
-  .put(UpdateSingleBlog);
+  .put(UpdateSingleBlog,);
+
 
 module.exports = router;

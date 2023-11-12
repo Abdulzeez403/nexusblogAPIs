@@ -1,8 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const UserSchema = require("../models/userSchema");
-const schematic = require("../models/schema");
+const UserModel = require("../models/userModel");
+const BlogModel = require("../models/blogModel");
 
 
 const RegisterUser = asyncHandler(async (req, res) => {
@@ -14,7 +14,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
   }
 
   //Check whether the user already exist!
-  const User = await UserSchema.findOne({ email });
+  const User = await UserModel.findOne({ email });
   if (User) {
     res.send(400);
     throw Error("The user is already exist!");
@@ -23,7 +23,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
   const hashpassword = await bcrypt.hash(password, 10);
   console.log(hashpassword);
 
-  const userInfo = await UserSchema.create({
+  const userInfo = await UserModel.create({
     username,
     email,
     password: hashpassword,
@@ -42,7 +42,7 @@ const LoginUser = async (req, res) => {
       throw Error("All Field must be filled!");
     }
 
-    const user = await UserSchema.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (!user) res.status(404).send("User is not Found!");
     const isCorrect = bcrypt.compare(req.body.password, user.password);
     if (isCorrect) {
@@ -55,7 +55,7 @@ const LoginUser = async (req, res) => {
           },
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "15days" }
+        { expiresIn: "1days" }
       );
       res
         .cookie("accesstoken", accesstoken, { httpOnly: true })
@@ -68,18 +68,18 @@ const LoginUser = async (req, res) => {
         });
     }
   }
-   catch (err) {
+  catch (err) {
     console.log(err);
   }
 };
 
-const CurrentUser = asyncHandler( async (req, res) => {
+const CurrentUser = asyncHandler(async (req, res) => {
   res.send({ message: "The current user!" });
 });
 
 const GettingUserBlogs = asyncHandler(async (req, res) => {
   const userId = req.params.id;
-  const Blog = await schematic.find({ userId });
+  const Blog = await BlogModel.find({ userId });
   res.status(200).send(Blog);
 });
 

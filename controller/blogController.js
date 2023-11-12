@@ -1,10 +1,10 @@
-const schematic = require("../models/schema");
+const BlogModel = require("../models/blogModel");
 const asyncHandler = require("express-async-handler");
 
 const GettingASingleBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const body = req.body;
-  const BlogId = await schematic.findById(id, body, { new: true });
+  const BlogId = await BlogModel.findById(id, body, { new: true });
   if (!BlogId) {
     res.status(400);
     throw new Error("Cant get a single blog!");
@@ -25,14 +25,14 @@ const GettingAllBlogs = asyncHandler(async (req, res) => {
 
   try {
     if (category) {
-      const Blog = await schematic
+      const Blog = await BlogModel
         .find({ category: category })
         .limit(endIndex)
         .skip(startIndex)
         .exec();
       res.status(200).send(Blog);
     } else {
-      const Blog = await schematic
+      const Blog = await BlogModel
         .find()
         .limit(endIndex)
         .skip(startIndex)
@@ -47,7 +47,7 @@ const GettingAllBlogs = asyncHandler(async (req, res) => {
 const PostBlog = asyncHandler(async (req, res, next) => {
   const { title, body, image, category } = req.body;
   const userId = req.params.id;
-  const Blogs = await schematic.create({
+  const Blogs = await BlogModel.create({
     userId,
     title,
     body,
@@ -60,7 +60,7 @@ const UpdateSingleBlog = asyncHandler(async (req, res) => {
   const { title, description, body, author } = req.body;
   const { id } = req.params;
 
-  const updateBlog = await schematic.findByIdAndUpdate(
+  const updateBlog = await BlogModel.findByIdAndUpdate(
     id,
     {
       title,
@@ -80,12 +80,12 @@ const UpdateSingleBlog = asyncHandler(async (req, res) => {
 const DeleteSingleBlog = asyncHandler(async (req, res) => {
   const id = req.params.id;
 
-  // const user = await schematic.findById(id);
+  // const user = await BlogModel.findById(id);
   // if (req.id !== user.id) {
   //   res.status(400);
   //   throw new Error("You cant delete this!");
   // }
-  const DeleteBlog = await schematic.findByIdAndRemove(id);
+  const DeleteBlog = await BlogModel.findByIdAndRemove(id);
   if (!DeleteBlog) {
     res.status(400);
     throw new Error("Delete Failed!");
@@ -93,10 +93,29 @@ const DeleteSingleBlog = asyncHandler(async (req, res) => {
   res.send("Deleted!");
 });
 
+const likeAndUnlike = asyncHandler(async (req, res) => {
+  let { id: blogId } = req.params;
+  let userId = req.user._id;
+  const blog = await BlogModel.findById(blogId)
+  if (!blog) {
+    res.status(400).json({ error: "Blog not found!" })
+  }
+  const userLikeUnlike = blog.likes.includes(userId)
+  if (userLikeUnlike) {
+    await blog.updateOne({ $pull: { likes: userId } })
+    res.status(200).json({ success: true, messsage: "blog unliked successfully" })
+  } else {
+    blog.likes.push(userId)
+    await blog.save()
+    res.status(200).json({ success: true, messsage: "blog liked successfully" })
+  }
+})
+
 module.exports = {
   PostBlog,
   GettingAllBlogs,
   GettingASingleBlog,
   UpdateSingleBlog,
   DeleteSingleBlog,
+  likeAndUnlike
 };

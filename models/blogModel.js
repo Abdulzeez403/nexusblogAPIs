@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const PostDetail = new mongoose.Schema(
+const BlogSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -20,8 +20,14 @@ const PostDetail = new mongoose.Schema(
     category: {
       type: String,
     },
+    likes: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "BlogUser",
+      default: [],
+
+    }
   },
   { timestamps: true }
 );
-const schematic = mongoose.model("BlogData", PostDetail);
-module.exports = schematic;
+module.exports = mongoose.model("BlogData", BlogSchema);
+

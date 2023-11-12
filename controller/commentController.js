@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const commentSchema = require("../models/comment");
-const mongoose = require("mongoose");
+const commentSchema = require("../models/commentModel");
 
 const BlogComment = asyncHandler(async (req, res) => {
   const { body, email, name } = req.body;
@@ -17,7 +16,7 @@ const BlogComment = asyncHandler(async (req, res) => {
 
 const GetAllBlogComment = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const Blog = await commentSchema.find({id});
+  const Blog = await commentSchema.find({ id });
   if (!Blog) {
     res.status(400);
     throw new Error("The BlogID is not defined!");

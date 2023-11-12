@@ -8,25 +8,20 @@ require("dotenv").config();
 const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
-app.use(cors());
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-  );
-  next();
-});
+app.use(cors(
+  //   {
+  //   origin: [process.env.FRONTEND_URL, process.env.BACKEND_URL],
+  //   methods: ["POST", "GET", "PUT", "DELETE"],
+  //   credentials: true
+  // }
+));
+
 app.use(express.static("public"));
 app.use(express.json({ extend: true }));
 app.use(ErrorHandle);
 app.use("/api/user", require("./routes/userRoutes"));
-app.use("/api/blog", require("./routes/crud"));
-app.use("/api/comment", require("./routes/comment"));
+app.use("/api/blog", require("./routes/blogRoutes"));
+app.use("/api/comment", require("./routes/commentRoutes"));
 dbase();
 app.listen(PORT, (req, res) => {
   console.log(`This Server is running on port ${PORT}`);
